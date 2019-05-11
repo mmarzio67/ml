@@ -87,3 +87,19 @@ ALTER TABLE daylevels
     
 ALTER TABLE daylevels
     ALTER COLUMN uid SET NOT NULL;
+
+
+INSERT INTO daylevels (
+	focus, 
+	fischio_orecchie,
+	power_energy,
+	dormito,
+	pr,
+	ansia,
+	arrabiato,
+	irritato,
+	depresso,
+	cinque_tibetani,
+	meditazione,
+	uid) 
+	VALUES (1,2,3,4,5,6,7,8,9,false,false,2);

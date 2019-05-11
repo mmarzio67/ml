@@ -6,41 +6,53 @@
 {{template "navbar"}}
 <h1>Create A New Daylevel</h1>
 <form method="post" action="/dls/create/process">
-   <label for="focus">Focus:</label>
-    <input type="number" step="1" min="1" max="9" name="focus" placeholder="focus" required><br>
 
+<!-- Aligned labels and input fields
+    <form>
+            <div class="form-group row">
+              <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+              <div class="col-sm-10">
+                <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+              </div>
+            </div>
+-->
+    <label for="focus">Focus:</label>
+    <input type="number" step="1" min="1" max="9" name="focus" placeholder="focus" value="{{.Focus}}" required><br>
+    
     <label for="fischio_orecchie">Fischio orecchie:</label>
-    <input type="number" step="1" min="1" max="9" name="fischio_orecchie" placeholder="Fischio orecchie" required><br>
+    <input type="number" step="1" min="1" max="9" name="fischio_orecchie" placeholder="Fischio orecchie" value="{{.FischioOrecchie}}" required><br>
 
     <label for="power_energy">Livello energia:</label>
-    <input type="number" step="1" min="1" max="9" name="power_energy" placeholder="Livello energia" required><br>
+    <input type="number" step="1" min="1" max="9" name="power_energy" placeholder="Livello energia" value="{{.PowerEnergy}}" required><br>
 
     <label for="dormito">Qualità sonno:</label>
-    <input type="number" step="1" min="1" max="9" name="dormito" placeholder="Qualità sonno" required><br>
+    <input type="number" step="1" min="1" max="9" name="dormito" placeholder="Qualità sonno" value="{{.Dormito}}" required><br>
 
     <label for="pr">Public relations:</label>
-    <input type="number" step="1" min="1" max="9" name="pr" placeholder="Public relations" required><br>
+    <input type="number" step="1" min="1" max="9" name="pr" placeholder="Public relations" value="{{.PR}}" required><br>
 
     <label for="ansia">Livello ansia:</label>
-    <input type="number" step="1" min="1" max="9" name="ansia" placeholder="Livello ansia" required><br>
+    <input type="number" step="1" min="1" max="9" name="ansia" placeholder="Livello ansia" value="{{.Ansia}}" required><br>
 
     <label for="arrabiato">Arrabiato:</label>
-    <input type="number" step="1" min="1" max="9" name="arrabiato" placeholder="Arrabiato" required><br>
+    <input type="number" step="1" min="1" max="9" name="arrabiato" placeholder="Arrabiato" value="{{.Arrabiato}}" required><br>
 
     <label for="irritato">Irritato:</label>
-    <input type="number" step="1" min="1" max="9" name="irritato" placeholder="Irritato" required><br>
+    <input type="number" step="1" min="1" max="9" name="irritato" placeholder="Irritato" value="{{.Irritato}}" required><br>
 
     <label for="depresso">Depresso:</label>
-    <input type="number" step="1" min="1" max="9" name="depresso" placeholder="Depresso" required><br>
+    <input type="number" step="1" min="1" max="9" name="depresso" placeholder="Depresso" value="{{.Depresso}}" required><br>
     
     <label for="cinque_tibetani">Cinque tibetani:</label>
     <select name="cinque_tibetani">
+        <option selected>{{.CinqueTib}}</option>
         <option value="True">Fatto</option>
         <option value="False">Non fatto</option>
     </select><br>
 
     <label for="meditazione">Meditazione:</label>
     <select name="meditazione">
+        <option selected>{{.Meditazione}}</option>
         <option value="True">Fatta</option>
         <option value="False">Non fatta</option>
     </select><br>

@@ -11,6 +11,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var Ur *User
+
 func Bar(w http.ResponseWriter, req *http.Request) {
 	u := getUser(w, req)
 	if !AlreadyLoggedIn(w, req) {
@@ -31,6 +33,7 @@ func Signup(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	var us User
+	var id int64
 	// process form submission
 	if req.Method == http.MethodPost {
 		// get form values
@@ -41,7 +44,7 @@ func Signup(w http.ResponseWriter, req *http.Request) {
 		r := req.FormValue("role")
 
 		bs := []byte(p)
-		us = User{un, bs, f, l, r}
+		us = User{id, un, bs, f, l, r}
 
 		usertaken := SignupAuth(&us)
 
@@ -65,7 +68,7 @@ func Signup(w http.ResponseWriter, req *http.Request) {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
-		us = User{un, bs, f, l, r}
+		us = User{id, un, bs, f, l, r}
 		dbUsers[un] = us
 
 		// redirect
@@ -86,7 +89,6 @@ func Login(w http.ResponseWriter, req *http.Request) {
 	}
 
 	var pc Credentials
-	var ur *User
 	var errAuth error
 	var un string
 	// process form submission
@@ -95,16 +97,16 @@ func Login(w http.ResponseWriter, req *http.Request) {
 		p := req.FormValue("password")
 
 		pc = Credentials{p, uf}
-		ur, errAuth = pc.LoginCred()
+		Ur, errAuth = pc.LoginCred()
 		if errAuth != nil {
 			http.Error(w, "Something wrong with the user authentication", http.StatusForbidden)
 			return
 		}
-		dbUsers[un] = *ur
+		dbUsers[un] = *Ur
 		// does the entered password match the stored password?
-		err := bcrypt.CompareHashAndPassword(ur.Password, []byte(p))
+		err := bcrypt.CompareHashAndPassword(Ur.Password, []byte(p))
 		if err != nil {
-			fmt.Println(ur.Password)
+			fmt.Println(Ur.Password)
 			http.Error(w, "Username and/or password do not match, dude", http.StatusForbidden)
 			return
 		}
@@ -124,7 +126,7 @@ func Login(w http.ResponseWriter, req *http.Request) {
 
 	}
 	showSessions() // for demonstration purposes
-	config.TPL.ExecuteTemplate(w, "login.html", ur)
+	config.TPL.ExecuteTemplate(w, "login.html", Ur)
 }
 
 func Logout(w http.ResponseWriter, req *http.Request) {

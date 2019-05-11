@@ -35,7 +35,14 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	config.TPL.ExecuteTemplate(w, "create.html", nil)
+
+	ldl, err := LastDL(Ur.Id)
+	if err != nil {
+		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+		return
+	}
+
+	config.TPL.ExecuteTemplate(w, "create.html", ldl)
 }
 
 func CreateProcess(w http.ResponseWriter, r *http.Request) {

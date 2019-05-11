@@ -30,6 +30,7 @@ type DayLevel struct {
 }
 
 type User struct {
+	Id       int64
 	UserName string
 	Password []byte
 	First    string
@@ -47,6 +48,9 @@ type session struct {
 	un           string
 	lastActivity time.Time
 }
+
+//create a global variable User to retrieve user Id during session
+var Cusr User
 
 func SignupAuth(u *User) error {
 	// Parse and decode the request body into a new `Credentials` instance
@@ -69,7 +73,7 @@ func SignupAuth(u *User) error {
 func (creds *Credentials) LoginCred() (u *User, e error) {
 
 	var err error
-	result := config.DB.QueryRow("select first_name, last_name, user_name, user_pwd, idrole from users where user_name=$1", creds.Username)
+	result := config.DB.QueryRow("select id, first_name, last_name, user_name, user_pwd, idrole from users where user_name=$1", creds.Username)
 	if err != nil {
 		fmt.Println("something wrong with the query to the credentials persistance")
 		return nil, err
@@ -77,7 +81,7 @@ func (creds *Credentials) LoginCred() (u *User, e error) {
 	// We create another instance of `Credentials` to store the credentials we get from the database
 	su := &User{}
 	// Store the obtained password in `storedCreds`
-	err = result.Scan(&su.First, &su.Last, &su.UserName, &su.Password, &su.Role)
+	err = result.Scan(&su.Id, &su.First, &su.Last, &su.UserName, &su.Password, &su.Role)
 	if err != nil {
 		// If an entry with the username does not exist, send an "Unauthorized"(401) status
 		if err == sql.ErrNoRows {
@@ -160,7 +164,7 @@ func AllDL() (*[]DayLevel, error) {
 					FROM daylevels
 					WHERE uid=$1`
 
-	rows, err := config.DB.Query(queryAllDL, 6)
+	rows, err := config.DB.Query(queryAllDL, &Ur.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -240,9 +244,53 @@ func OneDL(id int64) (*DayLevel, error) {
 	return &dl, nil
 }
 
+func LastDL(usrid int64) (*DayLevel, error) {
+	var err error
+	ldl := DayLevel{}
+	fmt.Println(usrid)
+
+	lastQueryDL := `SELECT id,
+	focus, 
+	fischio_orecchie, 
+	power_energy,
+	dormito,
+	pr,
+	ansia,
+	arrabiato, 
+	irritato,
+	depresso, 
+	cinque_tibetani,
+	meditazione
+	FROM daylevels
+	WHERE uid=$1
+	ORDER BY id DESC 
+	LIMIT 1`
+
+	row := config.DB.QueryRow(lastQueryDL, usrid)
+
+	err = row.Scan(
+		&ldl.Id,
+		&ldl.Focus,
+		&ldl.FischioOrecchie,
+		&ldl.PowerEnergy,
+		&ldl.Dormito,
+		&ldl.PR,
+		&ldl.Ansia,
+		&ldl.Arrabiato,
+		&ldl.Irritato,
+		&ldl.Depresso,
+		&ldl.CinqueTib,
+		&ldl.Meditazione)
+
+	if err != nil {
+		fmt.Println(err)
+		return &ldl, err
+	}
+	return &ldl, nil
+}
+
 func PutDL(r *http.Request) (*DayLevel, error) {
 	var err error
-
 	// get form values
 	dl := DayLevel{}
 
@@ -341,8 +389,8 @@ func PutDL(r *http.Request) (*DayLevel, error) {
 			meditazione,
 			uid) 
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,$12)`
-	var uid int
-	uid = 6
+	var uid *int64
+	uid = &Ur.Id
 	_, err = config.DB.Exec(queryDL,
 		&dl.Focus,
 		&dl.FischioOrecchie,
