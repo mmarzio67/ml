@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/mmarzio67/ml/daylevels"
 	"github.com/mmarzio67/ml/mlogger"
@@ -11,6 +12,9 @@ import (
 )
 
 func main() {
+
+	port := getenv("PORT", "5900")
+
 	logger := mlogger.GetInstance()
 	logger.Println("Starting Medaliving Web Service")
 
@@ -46,9 +50,17 @@ func main() {
 	http.HandleFunc("/slp/delete/process", sleepsmart.DeleteProcess)
 
 	http.Handle("/favicon.ico", http.NotFoundHandler())
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":"+port, nil)
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dls", http.StatusSeeOther)
+}
+
+func getenv(k string, v string) string {
+	if val := os.Getenv(k); val != "" {
+		return val
+	}
+	os.Setenv(k, v)
+	return v
 }
