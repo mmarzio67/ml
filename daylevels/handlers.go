@@ -8,10 +8,14 @@ import (
 	"strconv"
 
 	"github.com/mmarzio67/ml/config"
+	"github.com/mmarzio67/ml/session"
 )
 
+var us config.User
+
+// Index ... lists all the daylevels thanks to the function AllDL
 func Index(w http.ResponseWriter, r *http.Request) {
-	if !AlreadyLoggedIn(w, r) {
+	if !session.AlreadyLoggedIn(w, r) {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -20,7 +24,10 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
 		return
 	}
-	dls, err := AllDL()
+
+	us = session.GetUser(w, r)
+
+	dls, err := AllDL(us.Id)
 	if err != nil {
 		http.Redirect(w, r, "/dls/create", http.StatusSeeOther)
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
@@ -30,13 +37,15 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	config.TPL.ExecuteTemplate(w, "daylevels.html", dls)
 }
 
+// Create ... lists the last entry daylevel created thanks to the function LastDL
 func Create(w http.ResponseWriter, r *http.Request) {
-	if !AlreadyLoggedIn(w, r) {
+	if !session.AlreadyLoggedIn(w, r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	ldl, err := LastDL(Ur.Id)
+	us = session.GetUser(w, r)
+	ldl, err := LastDL(&us.Id)
 	if err != nil {
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 		return
@@ -45,8 +54,9 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	config.TPL.ExecuteTemplate(w, "create.html", ldl)
 }
 
+// CreateProcess ... creates a new daylevel entry thanks to the function LastDL
 func CreateProcess(w http.ResponseWriter, r *http.Request) {
-	if !AlreadyLoggedIn(w, r) {
+	if !session.AlreadyLoggedIn(w, r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -56,7 +66,7 @@ func CreateProcess(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dl, err := PutDL(r)
+	dl, err := PutDL(w, r)
 	fmt.Println(dl)
 
 	if err != nil {
@@ -68,8 +78,9 @@ func CreateProcess(w http.ResponseWriter, r *http.Request) {
 	config.TPL.ExecuteTemplate(w, "created.html", dl)
 }
 
+// Update ... selects a single daylevel that was selected in the webpage thanks to the function OneDL
 func Update(w http.ResponseWriter, r *http.Request) {
-	if !AlreadyLoggedIn(w, r) {
+	if !session.AlreadyLoggedIn(w, r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -109,8 +120,9 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	config.TPL.ExecuteTemplate(w, "update.html", dl)
 }
 
+// UpdateProcess ... updates daylevels values from a daylevel passed argument thanks to the function UpdateDL
 func UpdateProcess(w http.ResponseWriter, r *http.Request) {
-	if !AlreadyLoggedIn(w, r) {
+	if !session.AlreadyLoggedIn(w, r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -129,8 +141,9 @@ func UpdateProcess(w http.ResponseWriter, r *http.Request) {
 	config.TPL.ExecuteTemplate(w, "updated.html", dl)
 }
 
+// DeleteProcess ... deletes a daylevels from DB thanks to the function DeleteDL
 func DeleteProcess(w http.ResponseWriter, r *http.Request) {
-	if !AlreadyLoggedIn(w, r) {
+	if !session.AlreadyLoggedIn(w, r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

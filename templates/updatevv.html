@@ -1,0 +1,32 @@
+{{template "header"}}
+        <title>Update misure vitali</title>
+</head>
+
+<body>
+{{template "navbar"}}
+<h2>Aggiornamento misura vitale #{{.Id}}</h2>
+<form method="post" action="/val/update/process">      
+
+    <label for="id">Id:</label>
+    <input type="text" name="id" value="{{.Id}}" class="field left" readonly="readonly"><br>
+
+    <label for="peso">Peso:</label>
+    <input type="number" step="0.1" name="peso" placeholder="Peso" required autofocus value="{{.Peso}}"><br>
+
+    <label for="girovita">Girovita:</label>
+    <input type="number" step="0.1" name="girovita" placeholder="Girovita" required autofocus value="{{.Girovita}}"><br>
+
+    <label for="grassocorpo">Grasso corporeo:</label>
+    <input type="number" step="0.1" name="grassocorpo" placeholder="GrassoCorpo" required autofocus value="{{.Grassocorpo}}"><br>
+
+    <label for="imc">IMC:</label>
+    <input type="number" step="0.1" name="imc" placeholder="Imc" required autofocus value="{{.Imc}}"><br>
+
+    <label for="pulse">Pulsazioni:</label>
+    <input type="number" step="0.1" name="pulse" placeholder="Pulse" required autofocus value="{{.Pulse}}"><br>
+
+    <input type="submit">
+</form>
+
+</body>
+{{template "footer"}}

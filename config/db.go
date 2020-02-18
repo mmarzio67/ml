@@ -9,6 +9,8 @@ import (
 )
 
 var DB *sql.DB
+var DbUsers = map[string]User{}
+var DbSessions = map[string]Session{} // session ID, session
 var dbSessionsCleaned time.Time
 
 func init() {

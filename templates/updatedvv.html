@@ -1,0 +1,35 @@
+{{template "header"}}
+        <title>Updated Valori vitali</title>
+</head>
+<body>
+{{template "navbar"}}
+<p>Aggiorna valori vitali</p>
+
+<table class="table">
+  <thead class="black white-text">
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Data</th>
+      <th scope="col">Peso</th>
+      <th scope="col">Girovita</th>
+      <th scope="col">Grasso corporeo</th>
+      <th scope="col">Indice Massa Corporea</th>
+      <th scope="col">Pulsazioni</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">{{.Id}}</th>
+      <td>{{.CreatedOn}}</td>
+      <td>{{.Peso}}</td>
+      <td>{{.Girovita}}</td>
+      <td>{{.Grassocorpo}}</td>
+      <td>{{.Imc}}</td>
+      <td>{{.Pulse}}</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="link"><a href="/val">Tutti i valori vitali registrati</a></p>
+</body>
+{{template "footer"}}

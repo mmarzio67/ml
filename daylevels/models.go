@@ -1,20 +1,20 @@
 package daylevels
 
 import (
-	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/mmarzio67/ml/session"
+
 	"github.com/mmarzio67/ml/config"
-	"golang.org/x/crypto/bcrypt"
 )
 
+// DayLevel ... list of physiology levels for a day daylevel"
 type DayLevel struct {
-	Id              int64
+	ID              int64
 	Focus           int64
 	FischioOrecchie int64
 	PowerEnergy     int64
@@ -29,124 +29,8 @@ type DayLevel struct {
 	CreatedOn       time.Time
 }
 
-type User struct {
-	Id       int64
-	UserName string
-	Password []byte
-	First    string
-	Last     string
-	Role     string
-}
-
-// Create a struct that models the structure of a user, both in the request body, and in the DB
-type Credentials struct {
-	Password string
-	Username string
-}
-
-type session struct {
-	un           string
-	lastActivity time.Time
-}
-
-//create a global variable User to retrieve user Id during session
-var Cusr User
-
-func SignupAuth(u *User) error {
-	// Parse and decode the request body into a new `Credentials` instance
-	Password := u.Password
-
-	// Salt and hash the password using the bcrypt algorithm
-	// The second argument is the cost of hashing, which we arbitrarily set as 8 (this value can be more or less, depending on the computing power you wish to utilize)
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(Password), 8)
-
-	// Next, insert the username, along with the hashed password into the database
-	if _, err = config.DB.Query("insert into users (user_name, user_pwd, first_name, last_name, idrole) values ($1, $2,$3,$4,$5)", u.UserName, string(hashedPassword), u.First, u.Last, 1); err != nil {
-		// If there is any issue with inserting into the database, return a 500 error
-		return err
-	}
-
-	// We reach this point if the credentials we correctly stored in the database, and the default status of 200 is sent back
-	return err
-}
-
-func (creds *Credentials) LoginCred() (u *User, e error) {
-
-	var err error
-	result := config.DB.QueryRow("select id, first_name, last_name, user_name, user_pwd, idrole from users where user_name=$1", creds.Username)
-	if err != nil {
-		fmt.Println("something wrong with the query to the credentials persistance")
-		return nil, err
-	}
-	// We create another instance of `Credentials` to store the credentials we get from the database
-	su := &User{}
-	// Store the obtained password in `storedCreds`
-	err = result.Scan(&su.Id, &su.First, &su.Last, &su.UserName, &su.Password, &su.Role)
-	if err != nil {
-		// If an entry with the username does not exist, send an "Unauthorized"(401) status
-		if err == sql.ErrNoRows {
-			fmt.Println("username does not exit")
-			return nil, err
-		}
-		// If the error is of any other type, send a 500 status
-		fmt.Println("something wrong with the query to the credentials persistance")
-		return nil, err
-	}
-
-	// Compare the stored hashed password, with the hashed version of the password that was received
-	if err = bcrypt.CompareHashAndPassword([]byte(su.Password), []byte(creds.Password)); err != nil {
-		// If the two passwords don't match, return a 401 status
-		fmt.Println("password seem do not match")
-	}
-
-	// If we reach this point, that means the users password was correct, and that they are authorized
-	// The default 200 status is sent
-	return su, nil
-}
-
-func SigninAuth(w http.ResponseWriter, r *http.Request) {
-
-	// Parse and decode the request body into a new `Credentials` instance
-	creds := &Credentials{}
-	err := json.NewDecoder(r.Body).Decode(creds)
-	if err != nil {
-		// If there is something wrong with the request body, return a 400 status
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	// Get the existing entry present in the database for the given username
-	result := config.DB.QueryRow("select password from users where username=$1", creds.Username)
-	if err != nil {
-		// If there is an issue with the database, return a 500 error
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	// We create another instance of `Credentials` to store the credentials we get from the database
-	storedCreds := &Credentials{}
-	// Store the obtained password in `storedCreds`
-	err = result.Scan(&storedCreds.Password)
-	if err != nil {
-		// If an entry with the username does not exist, send an "Unauthorized"(401) status
-		if err == sql.ErrNoRows {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		// If the error is of any other type, send a 500 status
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	// Compare the stored hashed password, with the hashed version of the password that was received
-	if err = bcrypt.CompareHashAndPassword([]byte(storedCreds.Password), []byte(creds.Password)); err != nil {
-		// If the two passwords don't match, return a 401 status
-		w.WriteHeader(http.StatusUnauthorized)
-	}
-
-	// If we reach this point, that means the users password was correct, and that they are authorized
-	// The default 200 status is sent
-}
-
-func AllDL() (*[]DayLevel, error) {
+// AllDL ... selects all the daylevels from the Database
+func AllDL(uid int64) (*[]DayLevel, error) {
 
 	queryAllDL := `SELECT id, 
 					focus, 
@@ -164,7 +48,7 @@ func AllDL() (*[]DayLevel, error) {
 					FROM daylevels
 					WHERE uid=$1`
 
-	rows, err := config.DB.Query(queryAllDL, &Ur.Id)
+	rows, err := config.DB.Query(queryAllDL, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +57,7 @@ func AllDL() (*[]DayLevel, error) {
 	dls := make([]DayLevel, 0)
 	for rows.Next() {
 		err := rows.Scan(
-			&dl.Id,
+			&dl.ID,
 			&dl.Focus,
 			&dl.FischioOrecchie,
 			&dl.PowerEnergy,
@@ -191,8 +75,6 @@ func AllDL() (*[]DayLevel, error) {
 			return nil, err
 		}
 		dls = append(dls, dl)
-		fmt.Println("all'interno di allDL")
-
 	}
 	if err = rows.Err(); err != nil {
 		return nil, err
@@ -200,6 +82,7 @@ func AllDL() (*[]DayLevel, error) {
 	return &dls, nil
 }
 
+// OneDL ... selects one daylevel from the Database passed as argument
 func OneDL(id int64) (*DayLevel, error) {
 
 	var err error
@@ -224,7 +107,7 @@ func OneDL(id int64) (*DayLevel, error) {
 	row := config.DB.QueryRow(oneQueryDL, id)
 
 	err = row.Scan(
-		&dl.Id,
+		&dl.ID,
 		&dl.Focus,
 		&dl.FischioOrecchie,
 		&dl.PowerEnergy,
@@ -244,7 +127,8 @@ func OneDL(id int64) (*DayLevel, error) {
 	return &dl, nil
 }
 
-func LastDL(usrid int64) (*DayLevel, error) {
+// LastDL ... selects the last daylevel from the Database passed as argument
+func LastDL(usrid *int64) (*DayLevel, error) {
 	var err error
 	ldl := DayLevel{}
 	fmt.Println(usrid)
@@ -269,7 +153,7 @@ func LastDL(usrid int64) (*DayLevel, error) {
 	row := config.DB.QueryRow(lastQueryDL, usrid)
 
 	err = row.Scan(
-		&ldl.Id,
+		&ldl.ID,
 		&ldl.Focus,
 		&ldl.FischioOrecchie,
 		&ldl.PowerEnergy,
@@ -289,7 +173,8 @@ func LastDL(usrid int64) (*DayLevel, error) {
 	return &ldl, nil
 }
 
-func PutDL(r *http.Request) (*DayLevel, error) {
+// PutDL ... reads the values from the webform (POST) and create a new entry in the DB
+func PutDL(w http.ResponseWriter, r *http.Request) (*DayLevel, error) {
 	var err error
 	// get form values
 	dl := DayLevel{}
@@ -389,8 +274,9 @@ func PutDL(r *http.Request) (*DayLevel, error) {
 			meditazione,
 			uid) 
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,$12)`
-	var uid *int64
-	uid = &Ur.Id
+
+	us = session.GetUser(w, r)
+
 	_, err = config.DB.Exec(queryDL,
 		&dl.Focus,
 		&dl.FischioOrecchie,
@@ -403,14 +289,14 @@ func PutDL(r *http.Request) (*DayLevel, error) {
 		&dl.Depresso,
 		&dl.CinqueTib,
 		&dl.Meditazione,
-		uid)
+		&us.Id)
 	if err != nil {
 		return &dl, errors.New("500. Internal Server Error." + err.Error())
 	}
 	//return the newly created ID
 	fmt.Println("sono le 9 e tutto va bene")
 	lastidrow := config.DB.QueryRow("SELECT max(id) FROM daylevels")
-	err = lastidrow.Scan(&dl.Id)
+	err = lastidrow.Scan(&dl.ID)
 	if err != nil {
 		return &dl, err
 	}
@@ -418,13 +304,14 @@ func PutDL(r *http.Request) (*DayLevel, error) {
 	return &dl, nil
 }
 
+// UpdateDL ... reads the values from the webform (POST) and updates the daylevel values in the DB
 func UpdateDL(r *http.Request) (*DayLevel, error) {
 	// get form values
 	var err error
 
 	dl := DayLevel{}
 
-	dl.Id, err = strconv.ParseInt(r.FormValue("Id"), 10, 64)
+	dl.ID, err = strconv.ParseInt(r.FormValue("Id"), 10, 64)
 
 	dl.Focus, err = strconv.ParseInt(r.FormValue("focus"), 10, 64)
 	if err != nil {
@@ -506,8 +393,6 @@ func UpdateDL(r *http.Request) (*DayLevel, error) {
 	t := time.Now()
 	fmt.Println(t.Format("2006-01-02 15:04:05"))
 	dl.CreatedOn = t
-	fmt.Println("all'interno di UpdateDL")
-
 	updateQuery := `UPDATE daylevels 
 			  SET focus= $1,
 			  fischio_orecchie=$2,
@@ -535,7 +420,7 @@ func UpdateDL(r *http.Request) (*DayLevel, error) {
 		&dl.Depresso,
 		&dl.CinqueTib,
 		&dl.Meditazione,
-		&dl.Id)
+		&dl.ID)
 
 	if err != nil {
 		return &dl, err
@@ -543,10 +428,11 @@ func UpdateDL(r *http.Request) (*DayLevel, error) {
 	return &dl, nil
 }
 
+// DeleteDL ... deletes the daylevel on the DB based on a passed ID
 func DeleteDL(r *http.Request) error {
 	id := r.FormValue("id")
 	if id == "" {
-		return errors.New("400. Bad Request.")
+		return errors.New("400. Bad Request")
 	}
 
 	_, err := config.DB.Exec("DELETE FROM daylevels WHERE id=$1;", id)

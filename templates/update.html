@@ -4,10 +4,10 @@
 
 <body>
 {{template "navbar"}}
-<h2>Update DayLevel #{{.Id}}</h2>
+<h2>Update DayLevel #{{.ID}}</h2>
 <form method="post" action="/dls/update/process">      
 
-    <label for="Id">Id:</label>
+    <label for="Id">ID:</label>
     <input type="text" name="Id" value="{{.Id}}" class="field left" readonly="readonly"><br>
 
     <label for="Focus">Focus:</label>

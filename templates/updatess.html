@@ -1,0 +1,88 @@
+{{template "header"}}
+        <title>Update valori igiene sonno</title>
+</head>
+
+<body>
+{{template "navbar"}}
+<h2>Aggiornamento valori igiene sonno #{{.ID}}</h2>
+<form method="post" action="/slp/update/process">      
+
+    <label for="hsleep">Orario dormire:</label><br>
+    <input type="date" name="dsleep" placeholder="data" value="{{.DSleep}}" required>
+       <input type="time" name="hsleep" placeholder="ora" value="{{.HSleep}}" required><br>
+
+    <label for="hwake">Orario sveglia:</label>
+    <input type="date" name="dwake" placeholder="data" value="{{.DWake}}" required>
+    <input type="time" name="hwake" placeholder="ora" value="{{.HWake}}" required><br>
+
+
+  
+    <label for="hasleep">Ore sonno:</label>
+    <input type="number" name="hasleep" placeholder="hasleep" value="{{.HAsleep}}" required><br>
+
+    <label for="nrCycles">Numero cicli:</label>
+    <input type="number" placeholder="nrCycles" value="{{.NrCycles}}" required><br>
+
+    <label for="cyclesInterrupted">Ciclo interrotto:</label>
+    <select name="cyclesInterrupted">
+        <option selected>{{.CyclesInterrupted}}</option>
+        <option value="True">Sì</option>
+        <option value="False">No</option>
+    </select><br>
+
+    <label for="alcool">Bevuto alcolici:</label>
+    <select name="alcool">
+        <option selected>{{.Alcool}}</option>
+        <option value="True">Sì</option>
+        <option value="False">No</option>
+    </select><br>
+
+    <label for="coffee">Nr. caffé:</label>
+    <input type="number" step="1" min="0" max="10" name="coffee" placeholder="coffee" value="{{.Coffee}}" required><br>
+
+
+    <label for="lastcoffee">Orario ultimo caffé:</label>
+    <input type="time" name="lastcoffee" placeholder="lastcoffee" value="{{.LastCoffee}}" required><br>
+
+    <label for="diner">Tipo cena:</label>
+    <select name="diner">
+        <option selected>{{.Diner}}</option>
+        <option value="1">Non fatta</option>
+        <option value="2">Leggera</option>
+        <option value="3">Normale</option>
+        <option value="4">Pesante</option>
+    </select><br>
+
+    <label for="prepSleep">Preparazione sonno:</label>
+    <select name="prepSleep">
+        <option selected>{{.PrepSleep}}</option>
+        <option value="1">Non fatta</option>
+        <option value="2">Musica</option>
+        <option value="3">Lettura</option>
+        <option value="4">Sport</option>
+        <option value="5">Specifica</option>
+        <option value="6">Sociale</option>
+    </select><br>
+
+    <label for="blueLight">Esposizione bluelight:</label>
+    <select name="blueLight">
+        <option selected>{{.BlueLight}}</option>
+        <option value="1">Bassa</option>
+        <option value="2">Media</option>
+        <option value="3">Alta</option>
+        <option value="4">Prima di andare a letto</option>
+    </select><br>
+
+    <label for="melatoninLevel">Esposizione luce naturale:</label>
+    <select name="melatoninLevel">
+        <option selected>{{.MelatoninLevel}}</option>
+        <option value="1">Bassa</option>
+        <option value="2">Media</option>
+        <option value="3">Alta</option>
+    </select><br>
+
+    <input type="submit">
+</form>
+
+</body>
+{{template "footer"}}

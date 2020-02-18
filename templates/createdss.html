@@ -1,0 +1,53 @@
+{{template "header"}}
+        <title>Creato valore igiene sonno</title>
+</head>
+
+<body>
+{{template "navbar"}}
+
+<table class="table">
+  <thead class="black white-text">
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Data dormire</th>
+      <th scope="col">Ora dormire</th>
+      <th scope="col">Data sveglia</th>
+      <th scope="col">Ora sveglia</th>
+      <th scope="col">Ore dormite</th>
+      <th scope="col">Cicli sonno</th>
+      <th scope="col">Ciclo interrotto</th>
+      <th scope="col">Alcool</th>
+      <th scope="col">Nr. Caffé</th>
+      <th scope="col">Ultimo caffé</th>
+      <th scope="col">Cena</th>
+      <th scope="col">igiene sonno</th>
+      <th scope="col">Luce blu</th>
+      <th scope="col">Melatonina</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">{{.ID}}</th>
+      <td>{{.DSleep}}</td>
+      <td>{{.HSleep}}</td>
+      <td>{{.DWake}}</td>
+      <td>{{.HWake}}</td>
+      <td>{{.HAsleep}}</td>
+      <td>{{.NrCycles}}</td>
+      <td>{{.CyclesInterrupted}}</td>
+      <td>{{.Alcool}}</td>
+      <td>{{.Coffee}}</td>
+      <td>{{.LastCoffee}}</td>
+      <td>{{.Diner}}</td>
+      <td>{{.PrepSleep}}</td>
+      <td>{{.BlueLight}}</td>
+      <td>{{.MelatoninLevel}}</td> 
+      <td><a href="/slp/update?id={{.ID}}">Update</a></td>
+      <td><a href="/slp/delete/process?id={{.ID}}">Delete</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="link"><a href="/slp">Tutti i valori di igiene sonno</a></p>
+</body>
+{{template "footer"}}

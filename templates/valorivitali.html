@@ -1,0 +1,39 @@
+{{template "header"}}
+        <title>Day Levels</title>
+</head>
+
+<body>
+{{template "navbar"}}
+
+<table class="table">
+  <thead class="black white-text">
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Data</th>
+      <th scope="col">Peso</th>
+      <th scope="col">Girovita</th>
+      <th scope="col">Grasso corporeo</th>
+      <th scope="col">IMC</th>
+      <th scope="col">Pulsazioni</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{range .}}
+    <tr>
+      <th scope="row">{{.Id}}</th>
+      <td>{{.CreatedOn}}</td>
+      <td>{{.Peso}}</td>
+      <td>{{.Girovita}}</td>
+      <td>{{.Grassocorpo}}</td>
+      <td>{{.Imc}}</td>
+      <td>{{.Pulse}}</td>
+      <td><a href="/val/update?id={{.Id}}">Update</a></td>
+      <td><a href="/val/delete/process?id={{.Id}}">Delete</td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+
+<p class="link"><a href="/val/create">Inserire un nuovo valore vitale</a></p>
+</body>
+{{template "footer"}}
