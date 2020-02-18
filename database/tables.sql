@@ -1,3 +1,5 @@
+CREATE DATABASE ml;
+
 CREATE TABLE daylevels(
  id serial PRIMARY KEY,
  focus integer NOT NULL,
@@ -68,6 +70,8 @@ INSERT INTO roles (role)
 
 
 ##UPDATE roles SET role = 'user';
+
+
 
 
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ml;
