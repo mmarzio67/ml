@@ -15,12 +15,14 @@ var DbSessions = map[string]Session{} // session ID, session
 var dbSessionsCleaned time.Time
 
 func init() {
-	dbSource := getenv("DATABASE_URL", "postgres://ml:medal1v1n9@localhost/ml?sslmode=disable")
+	//dbSource := getenv("DATABASE_URL", "postgres://ml:ml@localhost/ml?sslmode=disable")
+
 	var err error
 
 	dbSessionsCleaned = time.Now()
 
-	DB, err = sql.Open("postgres", dbSource)
+	//DB, err = sql.Open("postgres", dbSource)
+	DB, err = sql.Open("postgres", "postgres://ml:medal!v!n9@localhost/ml?sslmode=disable")
 	if err != nil {
 		panic(err)
 	}

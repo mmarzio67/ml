@@ -69,8 +69,9 @@ INSERT INTO roles (role)
     VALUES ('user');
 
 
-##UPDATE roles SET role = 'user';
+## UPDATE roles SET role = 'user';
 
+## user mmeip@bluewin.ch pwd=medl1v1n9
 
 
 
