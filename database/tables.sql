@@ -73,8 +73,6 @@ INSERT INTO roles (role)
 
 ## user mmeip@bluewin.ch pwd=medl1v1n9
 
-
-
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ml;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO ml;
 
@@ -86,12 +84,17 @@ ALTER TABLE daylevels
 
 UPDATE daylevels SET uid = 1;
 
+## UPDATE users SET user_name = 'mmeip2@bluewin.ch' WHERE id=2;
 
 ALTER TABLE daylevels
     ALTER COLUMN uid TYPE integer;
     
 ALTER TABLE daylevels
     ALTER COLUMN uid SET NOT NULL;
+
+SELECT * FROM users;
+
+// read the id (users) and replace the uid below
 
 
 INSERT INTO daylevels (
@@ -107,7 +110,7 @@ INSERT INTO daylevels (
 	cinque_tibetani,
 	meditazione,
 	uid) 
-	VALUES (1,2,3,4,5,6,7,8,9,false,false,2);
+	VALUES (1,2,3,4,5,6,7,8,9,false,false,3);
 
 CREATE TABLE attivitafisica (
     id serial PRIMARY KEY,
@@ -164,7 +167,7 @@ INSERT INTO misurevitali (
     imc,
     pulse,
 	uid) 
-	VALUES (75,95,25,25,65,2);
+	VALUES (75,95,25,25,65,3);
 
 CREATE TABLE sleepsmart (
     id SERIAL PRIMARY KEY,
@@ -201,7 +204,7 @@ INSERT INTO sleepsmart (
     blueLight,
     melatoninLevel,
 	uid) 
-	VALUES ('22:00:00','05:00:00',7,4,true,true,2,'16:00:00',1,1,1,1,6);
+	VALUES ('22:00:00','05:00:00',7,4,true,true,2,'16:00:00',1,1,1,1,3);
 
 ALTER TABLE sleepsmart
 ADD COLUMN dataDormire date;
@@ -215,9 +218,15 @@ ADD COLUMN datasveglia date;
 ALTER TABLE sleepsmart
 ALTER COLUMN datasveglia SET NOT NULL;
 
+// delete all the row of speepsmart where datadormire OR sveglia are empty
+DELETE FROM sleepsmart
+WHERE datadormire is null OR datasveglia is null;
+
 
 INSERT INTO sleepsmart (
-	hsleep,
+	datadormire,
+    datasveglia,
+    hsleep,
     hwake,
     hasleep,
     nrCycles,
@@ -230,14 +239,15 @@ INSERT INTO sleepsmart (
     blueLight,
     melatoninLevel,
 	uid) 
-	VALUES ('22:00:00','05:00:00',7,4,true,true,2,'16:00:00',1,1,1,1,6);
+	VALUES ('2021-05-17 11:19:29.490938','2021-05-17 11:19:29.490938','22:00:00','05:00:00',7,4,true,true,2,'16:00:00',1,1,1,1,3);
+
 
 
     // on ubuntu 130 (PROD) userid=2
     INSERT INTO sleepsmart (datadormire, hsleep, datasveglia, hwake, hasleep, nrCycles,cyclesInterrupted,
 	alcool,coffee,lastCoffe,diner,prepSleep,blueLight,melatoninLevel,uid) 
 	VALUES
-    ('2019-07-19','22:00:00','2019-07-20','05:00:00',7,4,true,true,2,'12:00:00',1,1,1,1,2);
+    ('2019-07-19','22:00:00','2019-07-20','05:00:00',7,4,true,true,2,'12:00:00',1,1,1,1,3);
 
 
     // run every time you create a table
@@ -245,3 +255,6 @@ INSERT INTO sleepsmart (
     // esempio su Ubuntu (user diverso :: ml)
     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ml;
     GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO ml;
+
+
+    ## user mmeip@bluewin.ch pwd=medl1v1n9
