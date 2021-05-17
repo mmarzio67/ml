@@ -9,7 +9,7 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/mmarzio67/ml/config"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -84,6 +84,7 @@ func Signup(w http.ResponseWriter, req *http.Request) {
 }
 
 func Login(w http.ResponseWriter, req *http.Request) {
+	enableCors(&w)
 	fmt.Println(req.Method)
 	if AlreadyLoggedIn(w, req) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
@@ -158,4 +159,8 @@ func Logout(w http.ResponseWriter, req *http.Request) {
 	}
 
 	http.Redirect(w, req, "/login", http.StatusSeeOther)
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
