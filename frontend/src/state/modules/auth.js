@@ -23,10 +23,13 @@ export default {
   actions: {
     signup({ commit, dispatch }, authData) {
       axios
-        .post("/users", {
-          email: authData.email,
+        .post("/signup", {
+          username: authData.username,
           password: authData.password,
-          returnSecureToken: true,
+          firstname: authData.first,
+          lastname: authData.last,
+          role: authData.role
+          
         })
         .then((res) => {
           console.log(res);
@@ -49,7 +52,7 @@ export default {
     },
     login({ commit, dispatch }, authData) {
       axios
-        .post("/login", {
+        .post("/users/signin", {
           email: authData.email,
           password: authData.password,
           returnSecureToken: true,

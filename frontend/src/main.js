@@ -5,7 +5,7 @@ import router from "./router";
 import store from "./store";
 
 axios.defaults.baseURL =
-  "http://localhost:8000";
+  "http://localhost:5900";
 // set the headers authorization manually, demo purpose
 // axios.defaults.headers.common["Authorization"] = "yourock";
 axios.defaults.headers.get["accepts"] = "application/json";

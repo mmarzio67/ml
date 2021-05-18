@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/mmarzio67/ml/config"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 var DbSessionsCleaned time.Time
@@ -35,23 +35,6 @@ func GetUser(w http.ResponseWriter, req *http.Request) config.User {
 		u = config.DbUsers[s.Un]
 	}
 	return u
-}
-
-func AlreadyLoggedIn(w http.ResponseWriter, req *http.Request) bool {
-	c, err := req.Cookie("session")
-	if err != nil {
-		return false
-	}
-	s, ok := config.DbSessions[c.Value]
-	if ok {
-		s.LastActivity = time.Now()
-		config.DbSessions[c.Value] = s
-	}
-	_, ok = config.DbUsers[s.Un]
-	// refresh session
-	c.MaxAge = sessionLength
-	http.SetCookie(w, c)
-	return ok
 }
 
 func cleanSessions() {

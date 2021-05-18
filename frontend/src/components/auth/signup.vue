@@ -3,16 +3,16 @@
     <div class="signup-form">
       <form @submit.prevent="onSubmit">
         <div class="input">
-          <label for="username">Username</label>
-          <input type="text" id="username" v-model="username" />
+          <label for="username">E-Mail</label>
+          <input type="email" id="username" v-model="username" />
         </div>
         <div class="input">
-          <label for="email">Mail</label>
-          <input type="email" id="email" v-model="email" />
+          <label for="first">Firstname</label>
+          <input type="text" id="first" v-model="first" />
         </div>
         <div class="input">
-          <label for="age">Your Age</label>
-          <input type="number" id="age" v-model.number="age" />
+          <label for="last">Lastname</label>
+          <input type="text" id="last" v-model="last" />
         </div>
         <div class="input">
           <label for="password">Password</label>
@@ -25,6 +25,10 @@
             id="confirm-password"
             v-model="confirmPassword"
           />
+        </div>
+        <div class="input">
+          <label for="role">Role</label>
+          <input type="number" id="role" v-model="role" />
         </div>
         <div class="submit">
           <button type="submit">Submit</button>
@@ -39,19 +43,22 @@ export default {
   data() {
     return {
       username: "",
-      email: "",
-      age: null,
+      first: "",
+      last: null,
       password: "",
       confirmPassword: "",
+      role: 1
     };
   },
   methods: {
     onSubmit() {
       const formData = {
-        email: this.email,
-        age: this.age,
+        username: this.username,
+        first: this.first,
+        last: this.last,
         password: this.password,
         confirmPassword: this.confirmPassword,
+        role: this.role,
       };
       console.log("onSubmit:", formData);
       this.$store.dispatch("signup", formData);

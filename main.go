@@ -21,12 +21,14 @@ func main() {
 	http.HandleFunc("/", daylevels.Index)
 
 	// session handlers
+	http.HandleFunc("/firstapi", session.FirstApi)
 	http.HandleFunc("/signup", session.Signup)
 	http.HandleFunc("/login", session.Login)
 	http.HandleFunc("/logout", session.Logout)
 
 	// daylevels handlers
 	http.HandleFunc("/dls", daylevels.Index)
+	http.HandleFunc("/dls/daylevels", daylevels.GetAllDLAPI)
 	http.HandleFunc("/dls/create", daylevels.Create)
 	http.HandleFunc("/dls/create/process", daylevels.CreateProcess)
 	http.HandleFunc("/dls/update", daylevels.Update)

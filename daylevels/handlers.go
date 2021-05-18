@@ -2,6 +2,7 @@ package daylevels
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -160,4 +161,25 @@ func DeleteProcess(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/daylevels", http.StatusSeeOther)
+}
+
+func GetAllDLAPI(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	us = session.GetUser(w, r)
+
+	// For test puposes: write some tests dude!!!!
+	//dls, err := AllDL(2)
+
+	// PROD Code
+	dls, err := AllDL(us.Id)
+	if err != nil {
+		http.Redirect(w, r, "/dls/create", http.StatusSeeOther)
+		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+		return
+	}
+	jsonDL, err := json.MarshalIndent(dls, "", "   ")
+
+	w.Write(jsonDL)
 }
